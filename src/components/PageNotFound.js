@@ -1,12 +1,10 @@
 import React from "react";
+import { Navigate } from 'react-router-dom';
 
-const PageNotFound = () => {
+const PageNotFound = React.memo(() => {
     return (
-        <>
-            <h1>404 Такой страницы нет</h1>
-            <h2>Ты повернул не туда</h2>
-        </>
+        <Navigate to="/" replace />
     )
-};
+});
 
 export default PageNotFound;

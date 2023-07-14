@@ -12,6 +12,9 @@ import AddPlacePopup from '../components/AddPlacePopup.js';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import ProtectedRoute from './ProtectedRoute.js';
 import PageNotFound from './PageNotFound.js';
+import Login from './Login.js';
+import Register from './Register.js'
+import InfoTooltip from './InfoTooltip.js'
 
 // конекст с инфой пользователя
 import { CurrentUserContext } from '../contexts/CurrentUserContext.js';
@@ -21,6 +24,7 @@ function App() {
   const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = React.useState(false);
   const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = React.useState(false);
   const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = React.useState(false);
+  const [isInfoTooltip, setisInfoTooltip] = React.useState(false);
   // стейт картинки
   const [selectedCard, setSelectedCard] = React.useState({});
   //* стейт инфы о пользователе прокинем его в контекст
@@ -28,7 +32,7 @@ function App() {
   // стейт с масивом карточек
   const [cards, setCards] = React.useState([]);
   //стейт который следит за авторизацией пользователя
-  const [loggedIn, setLoggedIn] = React.useState(true);
+  const [loggedIn, setLoggedIn] = React.useState(false);
 
   // создает эфект при монтировании компанента
   React.useEffect(() => {
@@ -42,6 +46,11 @@ function App() {
         api.infoError(`Ошибка загрузки ины о пользователе с сервера`, err)
       })
   }, []);
+
+  //функция открытия инфо окна
+  function handleInfoTooltip() {
+    setisInfoTooltip(true);
+  };
 
   //редактирование аватарки
   function handleEditAvatarClick() {
@@ -60,7 +69,6 @@ function App() {
 
   // открытие попапа с большой картинкой карточки
   function handleCardClick(cardObject) {
-    // console.log(cardObject.link);
     setSelectedCard(cardObject);
   };
 
@@ -69,6 +77,7 @@ function App() {
     setIsEditProfilePopupOpen(false);
     setIsAddPlacePopupOpen(false);
     setIsEditAvatarPopupOpen(false);
+    setisInfoTooltip(false);
 
     // стейт картинки
     setSelectedCard({});
@@ -165,15 +174,17 @@ function App() {
     <>
       {/* контекст с инфой пользователя  */}
       <CurrentUserContext.Provider value={currentUser}>
-        <Header />
+        <Header loggedIn={loggedIn} />
         <Routes>
           <Route path='/' element={<ProtectedRoute element={Main} loggedIn={loggedIn} onEditProfile={handleEditProfileClick} onAddPlace={handleAddPlaceClick} onEditAvatar={handleEditAvatarClick} onCardClick={handleCardClick} cards={cards} onCardLike={handleCardLike} onCardDelete={handleCardDelete} />}></Route>
-          {/* <Route path='/sign-in' element={ }></Route>
-          <Route path='/sign-up' element={ }></Route> */}
+          <Route path='/sign-in' element={<Login loggedIn={loggedIn} />}></Route>
+          <Route path='/sign-up' element={<Register loggedIn={loggedIn} />}></Route>
           <Route path='*' element={<PageNotFound />} />
         </Routes>
         {/* <Main onEditProfile={handleEditProfileClick} onAddPlace={handleAddPlaceClick} onEditAvatar={handleEditAvatarClick} onCardClick={handleCardClick} cards={cards} onCardLike={handleCardLike} onCardDelete={handleCardDelete} /> */}
-        <Footer />
+        {loggedIn && <Footer />}
+
+        <InfoTooltip isOpen={isInfoTooltip} onClose={closeAllPopups} />
 
         <EditProfilePopup isOpen={isEditProfilePopupOpen} onClose={closeAllPopups} onUpdateUser={handleUpdateUser} />
 
