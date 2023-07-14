@@ -9,6 +9,9 @@ import { api } from '../utils/Api.js';
 import EditProfilePopup from '../components/EditProfilePopup.js';
 import EditAvatarPopup from '../components/EditAvatarPopup.js';
 import AddPlacePopup from '../components/AddPlacePopup.js';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import ProtectedRoute from './ProtectedRoute.js';
+import PageNotFound from './PageNotFound.js';
 
 // конекст с инфой пользователя
 import { CurrentUserContext } from '../contexts/CurrentUserContext.js';
@@ -24,6 +27,8 @@ function App() {
   const [currentUser, setCurrentUser] = React.useState({});
   // стейт с масивом карточек
   const [cards, setCards] = React.useState([]);
+  //стейт который следит за авторизацией пользователя
+  const [loggedIn, setLoggedIn] = React.useState(true);
 
   // создает эфект при монтировании компанента
   React.useEffect(() => {
@@ -161,7 +166,13 @@ function App() {
       {/* контекст с инфой пользователя  */}
       <CurrentUserContext.Provider value={currentUser}>
         <Header />
-        <Main onEditProfile={handleEditProfileClick} onAddPlace={handleAddPlaceClick} onEditAvatar={handleEditAvatarClick} onCardClick={handleCardClick} cards={cards} onCardLike={handleCardLike} onCardDelete={handleCardDelete} />
+        <Routes>
+          <Route path='/' element={<ProtectedRoute element={Main} loggedIn={loggedIn} onEditProfile={handleEditProfileClick} onAddPlace={handleAddPlaceClick} onEditAvatar={handleEditAvatarClick} onCardClick={handleCardClick} cards={cards} onCardLike={handleCardLike} onCardDelete={handleCardDelete} />}></Route>
+          {/* <Route path='/sign-in' element={ }></Route>
+          <Route path='/sign-up' element={ }></Route> */}
+          <Route path='*' element={<PageNotFound />} />
+        </Routes>
+        {/* <Main onEditProfile={handleEditProfileClick} onAddPlace={handleAddPlaceClick} onEditAvatar={handleEditAvatarClick} onCardClick={handleCardClick} cards={cards} onCardLike={handleCardLike} onCardDelete={handleCardDelete} /> */}
         <Footer />
 
         <EditProfilePopup isOpen={isEditProfilePopupOpen} onClose={closeAllPopups} onUpdateUser={handleUpdateUser} />
