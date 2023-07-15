@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { cloneElement } from 'react';
 
 import Header from './Header.js';
 import Main from './Main.js';
@@ -9,12 +9,14 @@ import { api } from '../utils/Api.js';
 import EditProfilePopup from '../components/EditProfilePopup.js';
 import EditAvatarPopup from '../components/EditAvatarPopup.js';
 import AddPlacePopup from '../components/AddPlacePopup.js';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, useNavigate } from 'react-router-dom';
 import ProtectedRoute from './ProtectedRoute.js';
 import PageNotFound from './PageNotFound.js';
 import Login from './Login.js';
 import Register from './Register.js'
 import InfoTooltip from './InfoTooltip.js'
+
+import { auth } from '../utils/Auth';
 
 // конекст с инфой пользователя
 import { CurrentUserContext } from '../contexts/CurrentUserContext.js';
@@ -33,6 +35,13 @@ function App() {
   const [cards, setCards] = React.useState([]);
   //стейт который следит за авторизацией пользователя
   const [loggedIn, setLoggedIn] = React.useState(false);
+  //стейт статусы регистрации
+  const [registrationStatus, setRegistrationStatus] = React.useState(false);
+  //* стейт с инфой пользователя
+  const [userEmail, setUserEmail] = React.useState('');
+
+  // хук навигации
+  const navigate = useNavigate();
 
   // создает эфект при монтировании компанента
   React.useEffect(() => {
@@ -45,6 +54,11 @@ function App() {
       .catch((err) => {
         api.infoError(`Ошибка загрузки ины о пользователе с сервера`, err)
       })
+  }, []);
+
+  //* проверка токена при первом рендере стр
+  React.useEffect(() => {
+    handleCheckToken();
   }, []);
 
   //функция открытия инфо окна
@@ -170,21 +184,81 @@ function App() {
       });
   };
 
+  //!регистрация пользователя
+  function handleRegisterUser(userRegistrData) {
+    auth.regist(userRegistrData)
+      .then((res) => {
+        // регистрация прошла
+        setRegistrationStatus(true);
+        //откроет инфо попап
+        handleInfoTooltip();
+        // перенаправит на поле авторизации
+        navigate('/sign-in');
+      })
+      .catch((err) => {
+        api.infoError('Регестрация не прошла', err);
+        setRegistrationStatus(false);
+      })
+      .finally(() => {
+        // откроет инфо попап о статусе регистрации
+        handleInfoTooltip();
+      })
+  };
+
+  //! авторизация пользователя
+  function handeleAuthorization(userLogin) {
+    auth.authorization(userLogin)
+      .then((res) => {
+        //запись токена в локал хранилище
+        localStorage.setItem('token', res.token);
+        handleCheckToken()
+        // setLoggedIn(true);
+        navigate('/');
+        //* можно добавить вызов инфо попапа об успешном входе
+      })
+      .catch((err) => {
+        api.infoError('Не авторизованы', err);
+        handleInfoTooltip();
+      })
+  };
+
+  //! проверка токена
+  function handleCheckToken() {
+    const token = localStorage.getItem('token');
+    if (token) {
+      auth.getToken(token)
+        .then((res) => {
+          setUserEmail(res.data.email);
+          setLoggedIn(true);
+          navigate('/');
+        })
+        .catch((err) => {
+          api.infoError('Токен - не прошел проверку', err);
+        })
+    };
+  };
+
+  // функция для выхода из акка, удаляет кэш локал сторджа
+  function loggedOut() {
+    localStorage.removeItem('token');
+    setLoggedIn(false);
+  }
+
   return (
     <>
       {/* контекст с инфой пользователя  */}
       <CurrentUserContext.Provider value={currentUser}>
-        <Header loggedIn={loggedIn} />
+        <Header loggedIn={loggedIn} userEmail={userEmail} loggedOut={loggedOut}/>
         <Routes>
           <Route path='/' element={<ProtectedRoute element={Main} loggedIn={loggedIn} onEditProfile={handleEditProfileClick} onAddPlace={handleAddPlaceClick} onEditAvatar={handleEditAvatarClick} onCardClick={handleCardClick} cards={cards} onCardLike={handleCardLike} onCardDelete={handleCardDelete} />}></Route>
-          <Route path='/sign-in' element={<Login loggedIn={loggedIn} />}></Route>
-          <Route path='/sign-up' element={<Register loggedIn={loggedIn} />}></Route>
+          <Route path='/sign-in' element={<Login loggedIn={loggedIn} onLogin={handeleAuthorization} />}></Route>
+          <Route path='/sign-up' element={<Register loggedIn={loggedIn} onRegist={handleRegisterUser} registrationStatus={registrationStatus} />}></Route>
           <Route path='*' element={<PageNotFound />} />
         </Routes>
         {/* <Main onEditProfile={handleEditProfileClick} onAddPlace={handleAddPlaceClick} onEditAvatar={handleEditAvatarClick} onCardClick={handleCardClick} cards={cards} onCardLike={handleCardLike} onCardDelete={handleCardDelete} /> */}
         {loggedIn && <Footer />}
 
-        <InfoTooltip isOpen={isInfoTooltip} onClose={closeAllPopups} />
+        <InfoTooltip isOpen={isInfoTooltip} onClose={closeAllPopups} registrationStatus={registrationStatus} />
 
         <EditProfilePopup isOpen={isEditProfilePopupOpen} onClose={closeAllPopups} onUpdateUser={handleUpdateUser} />
 
