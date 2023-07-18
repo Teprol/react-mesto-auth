@@ -27,5 +27,5 @@ export const objectSelectors = {
   profileAvatar: ".profile__avatar"
 }
 
-export const cohort = 'cohort-66';
-export const token = 'aa1ee32f-1c0f-4889-af2b-f7e1de805230';
+// export const cohort = 'cohort-66';
+// export const token = 'aa1ee32f-1c0f-4889-af2b-f7e1de805230';

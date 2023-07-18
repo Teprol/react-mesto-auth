@@ -2,7 +2,7 @@ export default function PopupWithForm({ children, title, name, isOpen, onClose, 
     return (
         <section
             className={`popup popup_${name} container ${isOpen && 'popup_opened'}`}
-            aria-label="Подтверждение на удаление карточки"
+            // aria-label="Подтверждение на удаление карточки"
         >
             <div className="popup__container">
                 <button className="popup__close button hover" type="button" onClick={onClose} />
@@ -11,7 +11,7 @@ export default function PopupWithForm({ children, title, name, isOpen, onClose, 
                     action="#"
                     name={name}
                     method="post"
-                    noValidate=""
+                    // noValidate=""
                     onSubmit={onSubmit}
                 >
                     <h2 className="popup__title">{title}</h2>

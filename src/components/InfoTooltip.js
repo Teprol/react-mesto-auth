@@ -11,7 +11,7 @@ const InfoTooltip = ({ isOpen, onClose, registrationStatus: regStatus }) => {
         >
             <div className="popup__container popup__container_info-Tooltip">
                 <button className="popup__close button hover" type="button" onClick={onClose} />
-                <img className="popup__image-status" src={regStatus ? okSvg : irSvg} alt="" />
+                <img className="popup__image-status" src={regStatus ? okSvg : irSvg} alt={regStatus ? "успешно" : "отклонено"} />
                 <p className="popup__text-info">{regStatus ? "Вы успешно зарегистрировались!" : "Что-то пошло не так! Попробуйте еще раз."}</p>
             </div>
         </section>

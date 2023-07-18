@@ -52,7 +52,7 @@ function App() {
         setCurrentUser(userInfo);
       })
       .catch((err) => {
-        api.infoError(`Ошибка загрузки ины о пользователе с сервера`, err)
+        api.getInfoError(`Ошибка загрузки ины о пользователе с сервера`, err)
       })
   }, []);
 
@@ -119,7 +119,7 @@ function App() {
           setStateCards(card._id, newCard);
         })
         .catch((err) => {
-          api.infoError(`Лайк не поставлен`, err);
+          api.getInfoError(`Лайк не поставлен`, err);
         })
     } else {
       api.removeLike(card._id)
@@ -127,7 +127,7 @@ function App() {
           setStateCards(card._id, newCard);
         })
         .catch((err) => {
-          api.infoError(`Лайк не удален`, err);
+          api.getInfoError(`Лайк не удален`, err);
         })
     }
   };
@@ -144,7 +144,7 @@ function App() {
         });
       })
       .catch((err) => {
-        api.infoError(`Карточка не удалена`, err);
+        api.getInfoError(`Карточка не удалена`, err);
       });
   };
 
@@ -156,7 +156,7 @@ function App() {
         closeAllPopups();
       })
       .catch((err) => {
-        api.infoError(`Информация о пользователе не изменена`, err);
+        api.getInfoError(`Информация о пользователе не изменена`, err);
       })
   };
 
@@ -168,7 +168,7 @@ function App() {
         closeAllPopups();
       })
       .catch((err) => {
-        api.infoError('аватарка не обнавлена', err);
+        api.getInfoError('аватарка не обнавлена', err);
       });
   };
 
@@ -180,7 +180,7 @@ function App() {
         closeAllPopups();
       })
       .catch((err) => {
-        api.infoError('Карточка не добавлена', err);
+        api.getInfoError('Карточка не добавлена', err);
       });
   };
 
@@ -190,13 +190,11 @@ function App() {
       .then((res) => {
         // регистрация прошла
         setRegistrationStatus(true);
-        //откроет инфо попап
-        handleInfoTooltip();
         // перенаправит на поле авторизации
         navigate('/sign-in');
       })
       .catch((err) => {
-        api.infoError('Регестрация не прошла', err);
+        api.getInfoError('Регестрация не прошла', err);
         setRegistrationStatus(false);
       })
       .finally(() => {
@@ -217,7 +215,7 @@ function App() {
         //* можно добавить вызов инфо попапа об успешном входе
       })
       .catch((err) => {
-        api.infoError('Не авторизованы', err);
+        api.getInfoError('Не авторизованы', err);
         handleInfoTooltip();
       })
   };
@@ -233,7 +231,7 @@ function App() {
           navigate('/');
         })
         .catch((err) => {
-          api.infoError('Токен - не прошел проверку', err);
+          api.getInfoError('Токен - не прошел проверку', err);
         })
     };
   };
@@ -248,7 +246,7 @@ function App() {
     <>
       {/* контекст с инфой пользователя  */}
       <CurrentUserContext.Provider value={currentUser}>
-        <Header loggedIn={loggedIn} userEmail={userEmail} loggedOut={loggedOut}/>
+        <Header loggedIn={loggedIn} userEmail={userEmail} loggedOut={loggedOut} />
         <Routes>
           <Route path='/' element={<ProtectedRoute element={Main} loggedIn={loggedIn} onEditProfile={handleEditProfileClick} onAddPlace={handleAddPlaceClick} onEditAvatar={handleEditAvatarClick} onCardClick={handleCardClick} cards={cards} onCardLike={handleCardLike} onCardDelete={handleCardDelete} />}></Route>
           <Route path='/sign-in' element={<Login loggedIn={loggedIn} onLogin={handeleAuthorization} />}></Route>

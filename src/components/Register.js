@@ -15,9 +15,9 @@ const Register = ({ loggedIn, onRegist }) => {
 
     return (
         loggedIn ?
-            <Navigate to="/" replace />
+            (<Navigate to="/" replace />)
             :
-            <>
+            (<>
                 <Authentication title="Регистрация" buttonText="Зарегистрироваться" onSubmit={handleSabmit}>
                     <input
                         className="authorization__import"
@@ -41,7 +41,7 @@ const Register = ({ loggedIn, onRegist }) => {
                     />
                 </Authentication>
                 <p className="authorization__link-login">Уже зарегистрированы? <Link className="authorization__link hover" to='/sign-in'>Войти</Link></p>
-            </>
+            </>)
     )
 }
 

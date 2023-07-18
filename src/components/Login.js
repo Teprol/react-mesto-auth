@@ -14,9 +14,9 @@ const Login = ({ loggedIn, onLogin }) => {
 
     return (
         loggedIn ?
-            <Navigate to="/" replace />
+            (<Navigate to="/" replace />)
             :
-            <Authentication title="Вход" buttonText="Войти" onSubmit={handleSabmit}>
+            (<Authentication title="Вход" buttonText="Войти" onSubmit={handleSabmit}>
                 <input
                     className="authorization__import"
                     id="authorization-email"
@@ -37,7 +37,7 @@ const Login = ({ loggedIn, onLogin }) => {
                     onChange={handleChange}
                     value={values.password}
                 />
-            </Authentication>
+            </Authentication>)
     )
 }
 
